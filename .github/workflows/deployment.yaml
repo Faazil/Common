@@ -8,6 +8,8 @@ on:
         required: true
         default: 'dev'
 
+get 2 values from Actins-1 repo, based on type-retailer,eng
+
 
 jobs:
   Get-Package:
