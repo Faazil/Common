@@ -1,0 +1,9 @@
+type: retailer
+eng-https://retailer.eng.com
+test-https://retailer.test.com
+prod-https://retailer.prod.com
+
+type: fis
+eng-https://fis.eng.com
+test-https://fis.test.com
+prod-https://fis.prod.com
