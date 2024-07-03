@@ -1,9 +1,9 @@
 environments:
   - type: 1
     awsAccounts:
-      - 1eng
-      - 1twst
-      - 1prod
-      - localhost
+      - 1eng: url1
+      - 1test: url2
+      - 1prod:url3
+      - localhost:url4
     awsRegions:
       - us-east-1
