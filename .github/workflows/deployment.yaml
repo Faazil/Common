@@ -5,8 +5,8 @@ on:
     types: [deploy-environment]
 
 jobs:
-  Upload-Package:
-    runs-on: aem2
+  Checkout-Repository:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -27,6 +27,22 @@ jobs:
             exit 1
           fi
           echo "AEM_HOST=$url" >> $GITHUB_ENV
+
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: package
+          path: we.retail.community.apps-1.11.84.zip
+
+  Upload-Package:
+    runs-on: aem2
+    needs: Checkout-Repository
+    steps:
+      - name: Download package artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: package
+          path: .
 
       - name: Upload AEM package (conditional)
         env:
