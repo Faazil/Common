@@ -21,7 +21,7 @@ jobs:
         id: extract_url
         run: |
           environment=${{ github.event.client_payload.environment }}
-          url=$(yq e ".environments[] | select(has(\"$environment\")) | .\"$environment\"" environments.yaml)
+          url=$(yq e ".environments[\"$environment\"]" environments.yaml)
           if [ -z "$url" ]; then
             echo "Invalid environment: $environment"
             exit 1
