@@ -6,7 +6,7 @@ on:
 
 jobs:
   Upload-Package:
-    runs-on: aem2
+    runs-on: aem
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
