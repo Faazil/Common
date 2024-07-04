@@ -38,9 +38,7 @@ jobs:
     runs-on: aem2
     needs: Checkout-Repository
     steps:
-      - name: Install curl
-        run: sudo apt-get update && sudo apt-get install -y curl
-
+  
       - name: Download package artifact
         run: |
           ARTIFACT_URL=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
