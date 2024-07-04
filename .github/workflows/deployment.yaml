@@ -1,27 +1,41 @@
 name: AEM Deployment Workflow
 
 on:
-  workflow_dispatch:
-    inputs:
-      awsAccount:
-        description: 'AWS Account (e.g., eng, test, prod, localhost)'
-        required: true
-        default: 'localhost'
+  repository_dispatch:
+    types: [deploy-environment]
 
 jobs:
- 
   Upload-Package:
     runs-on: aem
     steps:
-      
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install yq
+        run: |
+          sudo apt-get update && sudo apt-get install -y jq
+          sudo wget https://github.com/mikefarah/yq/releases/download/v4.9.8/yq_linux_amd64 -O /usr/bin/yq
+          sudo chmod +x /usr/bin/yq
+
+      - name: Extract Environment URL
+        id: extract_url
+        run: |
+          environment=${{ github.event.client_payload.environment }}
+          url=$(yq e ".environments[] | select(has(\"${environment}\")) | .${environment}" environments.yaml)
+          if [ -z "$url" ]; then
+            echo "Invalid environment: $environment"
+            exit 1
+          fi
+          echo "AEM_HOST=$url" >> $GITHUB_ENV
+
       - name: Upload AEM package (conditional)
         env:
-          AEM_HOST: ${{ env.AEM_HOST }}
           AEM_CREDENTIALS: ${{ secrets.AEM_CREDENTIALS }}
           AEM_PACKAGE_NAME: "we.retail.community.apps-1.11.84.zip"
+          AEM_HOST: ${{ env.AEM_HOST }}
         run: |
           curl -u $AEM_CREDENTIALS \
             -F cmd=upload \
             -F force=true \
             -F package=@$AEM_PACKAGE_NAME \
-            http://$AEM_HOST:4502/crx/packmgr/service/.json
+            http://$AEM_HOST/crx/packmgr/service/.json
