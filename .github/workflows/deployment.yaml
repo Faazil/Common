@@ -38,11 +38,16 @@ jobs:
     runs-on: aem2
     needs: Checkout-Repository
     steps:
+      - name: Install curl
+        run: sudo apt-get update && sudo apt-get install -y curl
+
       - name: Download package artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: package
-          path: .
+        run: |
+          ARTIFACT_URL=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository }}/actions/artifacts \
+            | jq -r '.artifacts[] | select(.name=="package") | .archive_download_url')
+          curl -L -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -o package.zip $ARTIFACT_URL
+          unzip package.zip
 
       - name: Upload AEM package (conditional)
         env:
