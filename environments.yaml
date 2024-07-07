@@ -1,4 +1,4 @@
-environments:
+dns_file:
   1eng: http://localhost:4504
   1test: http://localhost:4506
   1prod: http://localhost:4508
