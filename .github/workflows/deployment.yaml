@@ -21,7 +21,7 @@ jobs:
         id: extract_url
         run: |
           environment=${{ github.event.client_payload.environment }}
-          url=$(yq e ".environments[\"$environment\"]" environments.yaml)
+          url=$(yq e ".dns_file[\"$environment\"]" environments.yml)
           if [ -z "$url" ]; then
             echo "Invalid environment: $environment"
             exit 1
@@ -46,9 +46,7 @@ jobs:
         with:
           name: package
 
-      - name: Extract package artifact
-        run: unzip package.zip
-
+   
       - name: Upload AEM package (conditional)
         env:
           AEM_CREDENTIALS: ${{ secrets.AEM_CREDENTIALS }}
