@@ -2,6 +2,16 @@ name: Upload AEM Package Workflow
 
 on:
   workflow_call:
+    inputs:
+      AEM_CREDENTIALS:
+        required: true
+        type: secret
+      AEM_PACKAGE_NAME:
+        required: true
+        type: string
+      AEM_HOST:
+        required: true
+        type: string
 
 jobs:
   upload-package:
@@ -9,9 +19,9 @@ jobs:
     steps:
       - name: Upload AEM package
         env:
-          AEM_CREDENTIALS: ${{ secrets.AEM_CREDENTIALS }}
-          AEM_PACKAGE_NAME: ${{ env.AEM_PACKAGE_NAME }}
-          AEM_HOST: ${{ env.AEM_HOST }}
+          AEM_CREDENTIALS: ${{ inputs.AEM_CREDENTIALS }}
+          AEM_PACKAGE_NAME: ${{ inputs.AEM_PACKAGE_NAME }}
+          AEM_HOST: ${{ inputs.AEM_HOST }}
         run: |
           curl -u $AEM_CREDENTIALS \
             -F cmd=upload \
