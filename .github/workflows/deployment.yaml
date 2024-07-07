@@ -5,13 +5,10 @@ on:
     inputs:
       AEM_CREDENTIALS:
         required: true
-        type: secret
       AEM_PACKAGE_NAME:
         required: true
-        type: string
       AEM_HOST:
         required: true
-        type: string
 
 jobs:
   upload-package:
