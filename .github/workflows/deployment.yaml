@@ -14,7 +14,7 @@ jobs:
 
       - name: Convert YAML to JSON
         run: |
-          python -c 'import yaml, json, sys; json.dump(yaml.safe_load(sys.stdin), sys.stdout)' < environments.yml > environments.json
+          python -c 'import yaml, json, sys; json.dump(yaml.safe_load(sys.stdin), sys.stdout)' < environments.yaml > environments.json
 
       - name: Extract Environment URL
         id: extract_url
