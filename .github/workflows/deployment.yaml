@@ -6,7 +6,7 @@ on:
 
 jobs:
   Checkout-Repository:
-    runs-on: rhel88
+    runs-on: rhel888
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -40,7 +40,7 @@ jobs:
           path: we.retail.community.apps-1.11.84.zip
 
   Upload-Package:
-    runs-on: rhel88
+    runs-on: rhel888
     needs: Checkout-Repository
     steps:
       - name: Download package artifact
