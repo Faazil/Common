@@ -18,7 +18,7 @@ jobs:
         id: extract_url
         run: |
           environment=${{ github.event.client_payload.environment }}
-          url=$(cat environments.yml | ruby -r yaml -r json -e 'puts JSON.dump(YAML.load(STDIN.read))' | jq -r ".dns_file[\"$environment\"]")
+          url=$(cat environments.yaml | ruby -r yaml -r json -e 'puts JSON.dump(YAML.load(STDIN.read))' | jq -r ".dns_file[\"$environment\"]")
           if [ -z "$url" ]; then
             echo "Invalid environment: $environment"
             exit 1
