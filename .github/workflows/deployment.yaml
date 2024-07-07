@@ -6,28 +6,26 @@ on:
 
 jobs:
   Checkout-Repository:
-    runs-on: rhel888
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y jq
 
-      - name: Convert YAML to JSON
-        run: |
-          python -c 'import yaml, json, sys; json.dump(yaml.safe_load(sys.stdin), sys.stdout)' < environments.yaml > environments.json
-
-      - name: Extract Environment URL
+      - name: Convert YAML to JSON and Extract Environment URL
         id: extract_url
         run: |
           environment=${{ github.event.client_payload.environment }}
-          url=$(jq -r ".dns_file[\"$environment\"]" environments.json)
+          url=$(cat environments.yml | ruby -r yaml -r json -e 'puts JSON.dump(YAML.load(STDIN.read))' | jq -r ".dns_file[\"$environment\"]")
           if [ -z "$url" ]; then
             echo "Invalid environment: $environment"
             exit 1
           fi
           echo "AEM_HOST=$url" >> $GITHUB_ENV
 
-      - name: check variable
+      - name: Check variable
         run: echo $AEM_HOST
 
       - name: Upload package artifact
@@ -37,13 +35,16 @@ jobs:
           path: we.retail.community.apps-1.11.84.zip
 
   Upload-Package:
-    runs-on: rhel888
+    runs-on: aem2
     needs: Checkout-Repository
     steps:
       - name: Download package artifact
         uses: actions/download-artifact@v2
         with:
           name: package
+
+      - name: Extract package artifact
+        run: unzip package.zip
 
       - name: Upload AEM package (conditional)
         env:
