@@ -1,53 +1,16 @@
-name: AEM Deployment Workflow
+name: Upload AEM Package Workflow
 
 on:
-  repository_dispatch:
-    types: [deploy-environment]
+  workflow_call:
 
 jobs:
-  Checkout-Repository:
+  upload-package:
     runs-on: rhel888
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-
-      - name: Extract Environment URL
-        id: extract_url
-        run: |
-          environment=${{ github.event.client_payload.environment }}
-          url=$(awk -v env="$environment" 'BEGIN {FS=": "; OFS=": "} $1 ~ "^ *"env"$" {gsub(/^ *| *$/, "", $2); print $2}' environments.yaml)
-          if [ -z "$url" ]; then
-            echo "Invalid environment: $environment"
-            exit 1
-          fi
-          echo "AEM_HOST=$url" >> $GITHUB_ENV
-
-      - name: Check variable
-        run: echo $AEM_HOST
-
-      - name: Upload package artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: package
-          path: we.retail.community.apps-1.11.84.zip
-
-  Upload-Package:
-    runs-on: rhel888
-    needs: Checkout-Repository
-    steps:
-      - name: Download package artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: package
-
-      - name: Extract package artifact
-        run: unzip package.zip
-
-      - name: Upload AEM package (conditional)
+      - name: Upload AEM package
         env:
           AEM_CREDENTIALS: ${{ secrets.AEM_CREDENTIALS }}
-          AEM_PACKAGE_NAME: "we.retail.community.apps-1.11.84.zip"
+          AEM_PACKAGE_NAME: ${{ env.AEM_PACKAGE_NAME }}
           AEM_HOST: ${{ env.AEM_HOST }}
         run: |
           curl -u $AEM_CREDENTIALS \
