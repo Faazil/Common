@@ -28,6 +28,9 @@ jobs:
           fi
           echo "AEM_HOST=$url" >> $GITHUB_ENV
 
+      - name: check variable
+        run: echo $AEM_HOST
+
       - name: Upload package artifact
         uses: actions/upload-artifact@v2
         with:
