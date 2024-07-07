@@ -16,7 +16,7 @@ jobs:
         id: extract_url
         run: |
           environment=${{ github.event.client_payload.environment }}
-          url=$(awk -v env="$environment" 'BEGIN {FS=": "} $1 == env {print $2}' environments.yaml)
+          url=$(awk -v env="$environment" 'BEGIN {FS=": "; OFS=": "} $1 ~ "^ *"env"$" {gsub(/^ *| *$/, "", $2); print $2}' environments.yml)
           if [ -z "$url" ]; then
             echo "Invalid environment: $environment"
             exit 1
