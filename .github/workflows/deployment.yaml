@@ -1,17 +1,18 @@
 name: Upload AEM Package Workflow
 
 on:
-  workflow_call:
-    inputs:
-      AEM_CREDENTIALS:
-        required: true
-        type: string
-      AEM_PACKAGE_NAME:
-        required: true
-        type: string
-      AEM_HOST:
-        required: true
-        type: string
+  workflow_dispatch:
+
+inputs:
+  AEM_CREDENTIALS:
+    required: true
+    type: string
+  AEM_PACKAGE_NAME:
+    required: true
+    type: string
+  AEM_HOST:
+    required: true
+    type: string
 
 jobs:
   upload-package:
