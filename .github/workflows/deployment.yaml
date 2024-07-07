@@ -12,11 +12,11 @@ jobs:
         uses: actions/checkout@v3
 
 
-      - name: Convert YAML to JSON and Extract Environment URL
+      - name: Extract Environment URL
         id: extract_url
         run: |
           environment=${{ github.event.client_payload.environment }}
-          url=$(cat environments.yaml | ruby -r yaml -r json -e 'puts JSON.dump(YAML.load(STDIN.read))' | jq -r ".dns_file[\"$environment\"]")
+          url=$(awk -v env="$environment" 'BEGIN {FS=": "} $1 == env {print $2}' environments.yml)
           if [ -z "$url" ]; then
             echo "Invalid environment: $environment"
             exit 1
