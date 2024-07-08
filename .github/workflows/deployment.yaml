@@ -25,8 +25,8 @@ jobs:
           AEM_PACKAGE_NAME: ${{ inputs.AEM_PACKAGE_NAME }}
           AEM_HOST: ${{ inputs.AEM_HOST }}
         run: |
-          curl -u -v $AEM_CREDENTIALS \
+          curl -u -v admin:admin \
             -F cmd=upload \
             -F force=true \
-            -F package=@$AEM_PACKAGE_NAME \
-            http://$AEM_HOST/crx/packmgr/service/.json
+            -F package=@we.retail.community.apps-1.11.84.zip \
+            http://localhost:4502/crx/packmgr/service/.json
