@@ -25,7 +25,7 @@ jobs:
           AEM_PACKAGE_NAME: ${{ inputs.AEM_PACKAGE_NAME }}
           AEM_HOST: ${{ inputs.AEM_HOST }}
         run: |
-          curl -u $AEM_CREDENTIALS \
+          curl -u -v $AEM_CREDENTIALS \
             -F cmd=upload \
             -F force=true \
             -F package=@$AEM_PACKAGE_NAME \
