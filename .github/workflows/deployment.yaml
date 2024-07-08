@@ -16,9 +16,19 @@ on:
 
 
 jobs:
+  
   upload-package:
     runs-on: rhel999
     steps:
+      - name: Print environment variables
+        run: env
+
+      - name: Check AEM service availability
+        run: curl -u admin:admin http://localhost:4502
+
+      - name: List directory contents
+        run: ls -l
+
       - name: Upload AEM package
         env:
           AEM_CREDENTIALS: ${{ inputs.AEM_CREDENTIALS }}
@@ -29,4 +39,6 @@ jobs:
             -F cmd=upload \
             -F force=true \
             -F package=@we.retail.community.apps-1.11.84.zip \
+            --connect-timeout 10 \
             http://localhost:4502/crx/packmgr/service/.json
+
