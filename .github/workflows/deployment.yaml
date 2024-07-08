@@ -17,7 +17,7 @@ on:
 
 jobs:
   upload-package:
-    runs-on: new88
+    runs-on: rhel999
     steps:
       - name: Upload AEM package
         env:
