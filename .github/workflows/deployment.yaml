@@ -26,7 +26,41 @@ jobs:
       - name: List directory contents
         run: ls -l
 
-      - name: Upload AEM package
+      - name: Upload AEM package - Always ( all envs)
+        env:
+          AEM_CREDENTIALS: ${{ inputs.AEM_CREDENTIALS }}
+          AEM_PACKAGE_NAME: ${{ inputs.AEM_PACKAGE_NAME }}
+          AEM_HOST: ${{ inputs.AEM_HOST }}
+        run: |
+          IFS=',' read -r -a HOSTS <<< "${AEM_HOST}"
+          for host in "${HOSTS[@]}"; do
+            echo "Deploying to $host"
+            curl -u $AEM_CREDENTIALS \
+              -F cmd=upload \
+              -F force=true \
+              -F package=@${AEM_PACKAGE_NAME} \
+              --connect-timeout 10 \
+              "$host/crx/packmgr/service/.json"
+          done
+
+      - name: Execute only when url is preview
+        env:
+          AEM_CREDENTIALS: ${{ inputs.AEM_CREDENTIALS }}
+          AEM_PACKAGE_NAME: ${{ inputs.AEM_PACKAGE_NAME }}
+          AEM_HOST: ${{ inputs.AEM_HOST }}
+        run: |
+          IFS=',' read -r -a HOSTS <<< "${AEM_HOST}"
+          for host in "${HOSTS[@]}"; do
+            echo "Deploying to $host"
+            curl -u $AEM_CREDENTIALS \
+              -F cmd=upload \
+              -F force=true \
+              -F package=@${AEM_PACKAGE_NAME} \
+              --connect-timeout 10 \
+              "$host/crx/packmgr/service/.json"
+          done
+
+      - name: Replicate ( dont execute when starting *prod*, prod-live,end,test,etc -yes )
         env:
           AEM_CREDENTIALS: ${{ inputs.AEM_CREDENTIALS }}
           AEM_PACKAGE_NAME: ${{ inputs.AEM_PACKAGE_NAME }}
