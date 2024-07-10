@@ -2,7 +2,7 @@ name: Upload AEM Package Workflow
 
 on:
   workflow_call:
-     inputs:
+    inputs:
       AEM_CREDENTIALS:
         required: true
         type: string
@@ -13,10 +13,7 @@ on:
         required: true
         type: string
 
-
-
 jobs:
-  
   upload-package:
     runs-on: rhel999
     steps:
@@ -35,10 +32,13 @@ jobs:
           AEM_PACKAGE_NAME: ${{ inputs.AEM_PACKAGE_NAME }}
           AEM_HOST: ${{ inputs.AEM_HOST }}
         run: |
-          curl -u -v admin:admin \
-            -F cmd=upload \
-            -F force=true \
-            -F package=@we.retail.community.apps-1.11.84.zip \
-            --connect-timeout 10 \
-            http://localhost:4502/crx/packmgr/service/.json
-
+          IFS=',' read -r -a HOSTS <<< "${AEM_HOST}"
+          for host in "${HOSTS[@]}"; do
+            echo "Deploying to $host"
+            curl -u $AEM_CREDENTIALS \
+              -F cmd=upload \
+              -F force=true \
+              -F package=@${AEM_PACKAGE_NAME} \
+              --connect-timeout 10 \
+              "$host/crx/packmgr/service/.json"
+          done
