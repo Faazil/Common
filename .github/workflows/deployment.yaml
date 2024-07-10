@@ -10,7 +10,13 @@ on:
         required: true
         type: string
       AEM_HOST:
-        required: true
+        required: false
+        type: string
+      AEM_HOST_AUTHOR:
+        required: false
+        type: string
+      AEM_HOST_PREVIEW:
+        required: false
         type: string
 
 jobs:
@@ -26,53 +32,47 @@ jobs:
       - name: List directory contents
         run: ls -l
 
-      - name: Upload AEM package - Always ( all envs)
+      - name: Upload AEM package to author
+        if: ${{ inputs.AEM_HOST_AUTHOR }}
         env:
           AEM_CREDENTIALS: ${{ inputs.AEM_CREDENTIALS }}
           AEM_PACKAGE_NAME: ${{ inputs.AEM_PACKAGE_NAME }}
-          AEM_HOST: ${{ inputs.AEM_HOST }}
+          AEM_HOST_AUTHOR: ${{ inputs.AEM_HOST_AUTHOR }}
         run: |
-          IFS=',' read -r -a HOSTS <<< "${AEM_HOST}"
-          for host in "${HOSTS[@]}"; do
-            echo "Deploying to $host"
-            curl -u $AEM_CREDENTIALS \
-              -F cmd=upload \
-              -F force=true \
-              -F package=@${AEM_PACKAGE_NAME} \
-              --connect-timeout 10 \
-              "$host/crx/packmgr/service/.json"
-          done
+          echo "Deploying to author: $AEM_HOST_AUTHOR"
+          curl -u $AEM_CREDENTIALS \
+            -F cmd=upload \
+            -F force=true \
+            -F package=@${AEM_PACKAGE_NAME} \
+            --connect-timeout 10 \
+            "$AEM_HOST_AUTHOR/crx/packmgr/service/.json"
 
-      - name: Execute only when url is preview
+      - name: Upload AEM package to preview
+        if: ${{ inputs.AEM_HOST_PREVIEW }}
         env:
           AEM_CREDENTIALS: ${{ inputs.AEM_CREDENTIALS }}
           AEM_PACKAGE_NAME: ${{ inputs.AEM_PACKAGE_NAME }}
-          AEM_HOST: ${{ inputs.AEM_HOST }}
+          AEM_HOST_PREVIEW: ${{ inputs.AEM_HOST_PREVIEW }}
         run: |
-          IFS=',' read -r -a HOSTS <<< "${AEM_HOST}"
-          for host in "${HOSTS[@]}"; do
-            echo "Deploying to $host"
-            curl -u $AEM_CREDENTIALS \
-              -F cmd=upload \
-              -F force=true \
-              -F package=@${AEM_PACKAGE_NAME} \
-              --connect-timeout 10 \
-              "$host/crx/packmgr/service/.json"
-          done
+          echo "Deploying to preview: $AEM_HOST_PREVIEW"
+          curl -u $AEM_CREDENTIALS \
+            -F cmd=upload \
+            -F force=true \
+            -F package=@${AEM_PACKAGE_NAME} \
+            --connect-timeout 10 \
+            "$AEM_HOST_PREVIEW/crx/packmgr/service/.json"
 
-      - name: Replicate ( dont execute when starting *prod*, prod-live,end,test,etc -yes )
+      - name: Upload AEM package
+        if: ${{ inputs.AEM_HOST }}
         env:
           AEM_CREDENTIALS: ${{ inputs.AEM_CREDENTIALS }}
           AEM_PACKAGE_NAME: ${{ inputs.AEM_PACKAGE_NAME }}
           AEM_HOST: ${{ inputs.AEM_HOST }}
         run: |
-          IFS=',' read -r -a HOSTS <<< "${AEM_HOST}"
-          for host in "${HOSTS[@]}"; do
-            echo "Deploying to $host"
-            curl -u $AEM_CREDENTIALS \
-              -F cmd=upload \
-              -F force=true \
-              -F package=@${AEM_PACKAGE_NAME} \
-              --connect-timeout 10 \
-              "$host/crx/packmgr/service/.json"
-          done
+          echo "Deploying to: $AEM_HOST"
+          curl -u $AEM_CREDENTIALS \
+            -F cmd=upload \
+            -F force=true \
+            -F package=@${AEM_PACKAGE_NAME} \
+            --connect-timeout 10 \
+            "$AEM_HOST/crx/packmgr/service/.json"
