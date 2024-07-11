@@ -21,7 +21,7 @@ on:
 
 jobs:
   upload-package:
-    runs-on: rhel999
+    runs-on: RHEL8-01
     steps:
       - name: Print environment variables
         run: env
